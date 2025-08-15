@@ -1,0 +1,466 @@
+Phase 1: Foundation & Data Pipelines
+
+This phase is all about building a reliable "data factory."
+
+Module 1.1: Fundamental Data API Integration
+
+    Objective: To write reusable Python functions that fetch financial statements (Income Statement, Balance Sheet, Cash Flow Statement) from an external API.
+
+    Prerequisites: Basic Python programming skills.
+
+    Key Libraries/Tools: requests, pandas.
+
+    Step-by-Step Approach:
+
+        Choose and Subscribe to an API: Go to a provider like Alpha Vantage (offers a generous free tier) or IEX Cloud. Sign up and get your personal API key.
+
+        Set Up Your Project: Create a new folder for your project. Inside, create a config.py file and store your API key there (e.g., API_KEY = "YOUR_KEY_HERE"). This keeps your key separate from your main code.
+
+        Write a Wrapper Function: In a new file, say data_fetcher.py, create a function get_fundamental_data(ticker, statement_type). This function will construct the correct API URL using the ticker, statement type (e.g., 'INCOME_STATEMENT'), and your API key.
+
+        Handle API Calls: Use the requests library to make the API call. The data will likely come back in JSON format. Convert this JSON response into a pandas DataFrame for easy manipulation.
+
+        Implement Error Handling: What if you enter a fake ticker? What if you exceed your API call limit? Add try-except blocks to catch potential errors and print informative messages instead of crashing.
+
+        Test: Create a main.py or a Jupyter Notebook. Import your function and test it with a few well-known tickers (e.g., 'RELIANCE.BSE', 'AAPL'). Print the resulting DataFrame to ensure it works correctly.
+
+    What to Document:
+
+        In a README.md file, explain how to get an API key and put it in the config.py file.
+
+        Add docstrings to your get_fundamental_data function explaining what it does, its parameters, and what it returns.
+
+    Success Criteria: You can run a script that successfully fetches and displays the income statement for any valid stock ticker.
+
+Module 1.2: Core Database Setup
+
+    Objective: To create a structured database to store the raw financial data you fetch, preventing the need to call the API every time.
+
+    Prerequisites: Module 1.1 completed.
+
+    Key Libraries/Tools: SQLAlchemy, psycopg2-binary (for PostgreSQL) or Python's built-in sqlite3.
+
+    Step-by-Step Approach:
+
+        Choose and Install a Database: For a serious project, install PostgreSQL. For a simpler start, you can just use SQLite, which is built into Python and just creates a file on your computer.
+
+        Design Your Schema: Think about the tables you need. For now, you'll want income_statements, balance_sheets, and cash_flow_statements. What columns should they have? They should match the data from the API (e.g., ticker, report_date, totalRevenue, netIncome, etc.).
+
+        Connect to DB with SQLAlchemy: SQLAlchemy is a Python library that lets you interact with databases using Python objects, which is much easier than writing raw SQL. Write a function to establish a connection to your database.
+
+        Modify Your Fetcher: Update your get_fundamental_data function. After fetching data and converting it to a DataFrame, use the DataFrame's .to_sql() method to write the data directly into the appropriate table in your database. Add a parameter if_exists='replace' to ensure you're always storing the latest data.
+
+    What to Document:
+
+        Create a simple diagram showing your database tables and their columns.
+
+        Document the database connection settings and how to set up the database.
+
+    Success Criteria: You run your data fetching script, and the data automatically appears as new rows in your SQL database tables.
+
+Module 1.3: Fundamental Feature Engineering
+
+    Objective: To calculate key financial ratios from the raw data and store them as features for your model.
+
+    Prerequisites: Module 1.2 completed.
+
+    Key Libraries/Tools: pandas, SQLAlchemy.
+
+    Step-by-Step Approach:
+
+        Create a New Script: Call it feature_engineer.py.
+
+        Read Data from Database: Write functions to read the raw financial statements from your database tables into pandas DataFrames.
+
+        Calculate Ratios: Write Python functions to calculate important ratios. For example:
+
+            calculate_pe_ratio(price, earnings_per_share)
+
+            calculate_debt_to_equity(total_debt, total_equity)
+
+            You'll also need to calculate growth rates, like year-over-year revenue growth. This will involve comparing the latest report to the one from four quarters ago.
+
+        Consolidate Features: Create a new, clean DataFrame where each row represents a company at a specific point in time (e.g., ticker and report date), and the columns are your calculated features (P/E, D/E, ROE, etc.).
+
+        Save to Database: Save this consolidated features DataFrame to a new table in your database called fundamental_features.
+
+    What to Document:
+
+        In your README, create a "Feature Dictionary" that lists every feature you've created and the exact formula used to calculate it.
+
+    Success Criteria: You have a table in your database named fundamental_features filled with calculated financial ratios for all your tickers.
+
+... and so on for all the other modules. The level of detail will be similar for each, providing a clear path forward.
+
+Module 1.4: Historical Price Data Pipeline
+
+    Objective: To fetch daily historical price and volume data (OHLCV) for your target stocks.
+
+    Prerequisites: Module 1.2 completed.
+
+    Key Libraries/Tools: Same as 1.1 (requests, pandas, SQLAlchemy).
+
+    Step-by-Step Approach:
+
+        Find the API Endpoint: Your chosen API provider (e.g., Alpha Vantage) will have a different function or endpoint for time-series data. Find the one for daily historical prices.
+
+        Write the Fetcher Function: Create a new function get_price_data(ticker). It should fetch the last several years of daily OHLCV data.
+
+        Store the Data: Create a new table in your database called daily_prices with columns like ticker, date, open, high, low, close, volume.
+
+        Populate the Database: Modify your get_price_data function to save the fetched price data into this new table. Be mindful of updating existing data without creating duplicates.
+
+    What to Document:
+
+        Add the daily_prices table to your database schema diagram.
+
+    Success Criteria: Your database contains a table with the complete daily price history for all your stocks.
+
+Module 1.5: Technical Indicator Calculation
+
+    Objective: To calculate technical indicators from the price data to be used as model features.
+
+    Prerequisites: Module 1.4 completed.
+
+    Key Libraries/Tools: pandas_ta, pandas, SQLAlchemy.
+
+    Step-by-Step Approach:
+
+        Install a TA Library: pip install pandas_ta. This library is fantastic as it can calculate dozens of indicators with one line of code.
+
+        Extend Your Feature Engineering Script: In feature_engineer.py, add a new section for technicals.
+
+        Load Price Data: Read the daily price data for a ticker from your database into a DataFrame.
+
+        Calculate Indicators: Use pandas_ta to easily add indicator columns to your DataFrame. For example: my_dataframe.ta.rsi(append=True) will calculate the RSI and add it as a new column. Do this for a set of 10-15 indicators (MACD, Bollinger Bands, etc.).
+
+        Save to Database: Save this DataFrame, now enriched with technical indicators, to a new table called technical_features.
+
+    What to Document:
+
+        Add all the chosen technical indicators to your "Feature Dictionary" with a brief explanation.
+
+    Success Criteria: You have a technical_features table in your database with daily values for indicators like RSI and MACD for every stock.
+
+Module 1.6: Macroeconomic Data Pipeline
+
+    Objective: To gather high-level economic data that affects the entire market.
+
+    Prerequisites: Module 1.2 completed.
+
+    Key Libraries/Tools: fredapi, pandas.
+
+    Step-by-Step Approach:
+
+        Get FRED API Key: Go to the FRED (Federal Reserve Economic Data) website and register for a free API key.
+
+        Identify Key Series: Find the series codes for important indicators. For India, you might look for CPI (inflation), industrial production, etc., from sources like the RBI or MOSPI, which you might need to find a specific API or scrape for. For the US market, great examples are DGS10 (10-Year Treasury Yield) and CPIAUCSL (Consumer Price Index).
+
+        Write Fetcher Script: Create a new script get_macro_data.py. Use the fredapi library to pull the data for your chosen series.
+
+        Store the Data: Save this data to a new macro_features table in your database.
+
+    What to Document:
+
+        List the macroeconomic series codes you are using and why they are relevant.
+
+    Success Criteria: Your database has a table with historical values for key economic indicators.
+
+Module 1.7: News & Articles Pipeline
+
+    Objective: To systematically collect news articles related to your target companies.
+
+    Prerequisites: Module 1.2 completed.
+
+    Key Libraries/Tools: requests (if using NewsAPI.org), beautifulsoup4 (for scraping).
+
+    Step-by-Step Approach:
+
+        Choose a Source: The easiest start is NewsAPI.org, which has a free developer plan. You can search for articles mentioning a company's name.
+
+        Write the Pipeline Script: Create get_news_data.py. This script will loop through your list of tickers.
+
+        Fetch Articles: For each ticker, make an API call to get the latest news articles.
+
+        Process and Store: Extract the relevant information: headline, publication date, and the main text or description. Save this to a news_articles table in your database. Ensure you have a way to avoid saving the same article twice.
+
+    What to Document:
+
+        Note your news source and any query parameters you are using.
+
+    Success Criteria: A database table that automatically populates with new articles as they are published.
+
+Module 1.8: NLP Preprocessing & Sentiment Scoring
+
+    Objective: To convert the collected news text into a numerical sentiment score.
+
+    Prerequisites: Module 1.7 completed.
+
+    Key Libraries/Tools: transformers, torch (from PyTorch), pandas.
+
+    Step-by-Step Approach:
+
+        Set Up Environment: This is a big step. You'll need to install the transformers and torch libraries from Hugging Face.
+
+        Load Pre-trained Model: In a new script, sentiment_analyzer.py, load a financial-specific model. The command will look something like: from transformers import pipeline; sentiment_pipeline = pipeline("sentiment-analysis", model="ProsusAI/finbert").
+
+        Process News Data: Read the articles from your news_articles table that haven't been scored yet.
+
+        Apply the Model: Loop through each article's text, pass it to the sentiment_pipeline, and get the result (which will be a label like 'positive', 'negative', or 'neutral', and a confidence score).
+
+        Store the Scores: Save these sentiment labels and scores to a new sentiment_features table, linked to the article and date.
+
+    What to Document:
+
+        Link to the FinBERT model you are using on the Hugging Face Hub.
+
+        Explain the structure of the sentiment score output.
+
+    Success Criteria: Your sentiment_features table is populated with numerical sentiment data for each news article.
+
+Phase 2: Individual Model Development
+
+Now we build the "expert" models.
+
+Module 2.1: Baseline Fundamental Model (XGBoost)
+
+    Objective: To train a machine learning model using only financial ratios to establish a performance baseline.
+
+    Prerequisites: Module 1.3 completed.
+
+    Key Libraries/Tools: scikit-learn, xgboost, pandas.
+
+    Step-by-Step Approach:
+
+        Define the Prediction Target: This is crucial. What are you trying to predict? A simple start: "Will the stock's price increase by more than 5% over the next 3 months?" This is a binary classification problem (Yes/No).
+
+        Create Labels: You'll need to write a script that looks at your price data to create this "target" column for your historical fundamental data.
+
+        Load Data: Load your fundamental_features table and merge it with your newly created target labels.
+
+        Split Data: Split your data into a training set and a testing set using scikit-learn's train_test_split. This is vital to prevent the model from "cheating" by testing on data it has already seen.
+
+        Train Model: Instantiate and train an XGBClassifier model on your training data.
+
+        Evaluate: Use the trained model to make predictions on your testing set and measure its accuracy, precision, and recall.
+
+    What to Document:
+
+        Clearly define your prediction target.
+
+        Record the baseline performance metrics of this model.
+
+    Success Criteria: You have a trained XGBoost model and a set of performance scores that represent your baseline.
+
+Module 2.2: Baseline Technical Model (LSTM)
+
+    Objective: To train a time-series model using only historical price and technical indicator data.
+
+    Prerequisites: Module 1.5 completed.
+
+    Key Libraries/Tools: tensorflow or pytorch, scikit-learn, numpy.
+
+    Step-by-Step Approach:
+
+        Prepare Sequential Data: LSTMs require data in a specific 3D shape: [samples, timesteps, features]. You need to write a function that takes your technical_features data and converts it into sequences. For example, each "sample" could be a sequence of the last 30 days of data.
+
+        Define the LSTM Architecture: Using Keras (part of TensorFlow), define a simple sequential model with an LSTM layer, a Dropout layer (to prevent overfitting), and a final Dense layer for the output prediction (e.g., predicting if the next day's price will go up or down).
+
+        Compile and Train: Compile the model with an optimizer (like 'adam') and a loss function ('binary_crossentropy'). Then, train it on your sequential training data.
+
+        Evaluate: Evaluate its performance on the test set. Don't be discouraged if the accuracy is low; pure price prediction is notoriously difficult.
+
+    What to Document:
+
+        Diagram or describe your LSTM model's architecture.
+
+        Record its performance metrics.
+
+    Success Criteria: You have a trained and evaluated LSTM model.
+
+Module 2.3: Data Unification for Synthesis
+
+    Objective: To create one master dataset that combines all your features (fundamental, technical, sentiment, macro) on a single, consistent timeline.
+
+    Prerequisites: Modules 1.3, 1.5, 1.6, 1.8 completed.
+
+    Key Libraries/Tools: pandas.
+
+    Step-by-Step Approach:
+
+        The Time-Alignment Challenge: Your technical/sentiment data is daily, but fundamental data is quarterly. You need to align them.
+
+        Load All Feature Sets: Load your technical_features, sentiment_features, fundamental_features, and macro_features into pandas DataFrames.
+
+        Forward-Fill Quarterly Data: For the fundamental and some macro data, use the pandas.merge_asof function or a combination of reindex and ffill (forward-fill). This applies a quarterly value (like P/E ratio) to every single day following its release, until the next quarter's data becomes available.
+
+        Aggregate Daily Sentiment: You might have multiple news articles on one day. You'll need to aggregate them into a single daily sentiment score (e.g., the average score or the max score).
+
+        Merge Everything: Join all the processed DataFrames on the date and ticker columns.
+
+        Save the Master Table: Save this final, unified DataFrame to a new master_features table in your database.
+
+    What to Document:
+
+        A detailed explanation and diagram of the merging and forward-filling logic. This is complex and important.
+
+    Success Criteria: A single, clean master_features table exists in your database with no missing values, ready for the final model.
+
+Phase 3: Synthesis, Validation & Interpretation
+
+Here, we build the master brain and check if it's actually smart.
+
+Module 3.1: Ensemble "Meta-Model" Training
+
+    Objective: To train a final, master model using the unified dataset that learns from all features simultaneously.
+
+    Prerequisites: Module 2.3 completed.
+
+    Key Libraries/Tools: xgboost, scikit-learn.
+
+    Step-by-Step Approach:
+
+        Load Master Data: Load the data from your master_features table.
+
+        Define Target and Split: Use the same prediction target you defined in Module 2.1 and split the data into training and testing sets. It's crucial to use a time-based split (e.g., train on data before 2023, test on data from 2023 onwards) to avoid looking into the future.
+
+        Train the Meta-Model: Train an XGBClassifier on this rich, combined dataset.
+
+        Hyperparameter Tuning: Use scikit-learn's GridSearchCV or RandomizedSearchCV to systematically test different model configurations (e.g., learning_rate, max_depth) to find the best-performing combination.
+
+        Evaluate: Compare the performance of this meta-model to your baselines from Phase 2. It should be significantly better.
+
+    What to Document:
+
+        The final, tuned parameters of your master model.
+
+        A comparison table showing the performance of the baseline models vs. the final meta-model.
+
+    Success Criteria: A trained, optimized master model that outperforms the individual baseline models.
+
+Module 3.2: Backtesting Framework Construction
+
+    Objective: To simulate your model's trading strategy on historical data to assess its real-world viability.
+
+    Prerequisites: Module 3.1 completed.
+
+    Key Libraries/Tools: pandas, numpy, matplotlib.
+
+    Step-by-Step Approach:
+
+        Design the Simulation Logic: You need a script that iterates through your test data day by day.
+
+        Create a Portfolio Tracker: Initialize a simple portfolio (e.g., a dictionary or DataFrame) with a starting cash balance.
+
+        The Main Loop: For each day in your test set:
+        a. Use your trained model to make a prediction for that day.
+        b. Implement your strategy logic (e.g., "If prediction is 'buy' and we don't own the stock, buy X amount. If prediction is 'sell' and we do own it, sell all.")
+        c. Update your portfolio with any trades and track the daily value of your holdings.
+
+        Calculate Performance Metrics: After the loop finishes, calculate key metrics:
+
+            Total Return: How much did the portfolio grow?
+
+            Sharpe Ratio: Risk-adjusted return.
+
+            Max Drawdown: The largest peak-to-trough drop in portfolio value.
+
+        Visualize the Results: Plot the equity curve (your portfolio's value over time) against a benchmark like the NIFTY 50 index.
+
+    What to Document:
+
+        Clearly state your backtesting strategy rules.
+
+        Include the final performance report and the equity curve plot.
+
+    Success Criteria: A working backtester that produces a performance report and an equity curve for your strategy.
+
+Module 3.3: Explainable AI (XAI) Integration
+
+    Objective: To understand why your model is making certain predictions.
+
+    Prerequisites: Module 3.1 completed.
+
+    Key Libraries/Tools: shap.
+
+    Step-by-Step Approach:
+
+        Install SHAP: pip install shap.
+
+        Create an Explainer: After you've trained your XGBoost model, create a SHAP TreeExplainer object from it.
+
+        Calculate SHAP Values: Use the explainer to calculate SHAP values for your test data. These values quantify the contribution of each feature to each individual prediction.
+
+        Visualize Explanations: SHAP has excellent built-in plotting functions:
+
+            shap.summary_plot: Shows the most important features overall.
+
+            shap.force_plot: Shows the forces pushing a single prediction higher or lower. This is perfect for your dashboard.
+
+        Integrate: Write a function explain_prediction(data_point) that returns a SHAP force plot.
+
+    What to Document:
+
+        Include a summary plot in your README showing the top 10 most influential features for your model.
+
+    Success Criteria: You can take any single prediction and generate a plot that explains which features were most responsible for the outcome.
+
+Phase 4: Deployment & Automation
+
+Now, we make it real.
+
+Module 4.1: Interactive Dashboard (UI/API)
+
+    Objective: To create a simple web application that serves as an interface for your model.
+
+    Prerequisites: Module 3.3 completed.
+
+    Key Libraries/Tools: streamlit, pandas, matplotlib.
+
+    Step-by-Step Approach:
+
+        Install Streamlit: pip install streamlit.
+
+        Create app.py: Create a new Python file for your web app.
+
+        Build the UI: Use Streamlit's simple commands to build the interface:
+
+            st.title("AI Stock Analyst")
+
+            ticker = st.text_input("Enter a stock ticker:")
+
+        Connect the Backend: When a user enters a ticker and clicks a button:
+        a. Your app should trigger the full pipeline: fetch the latest data, engineer the features, and feed it to your saved, trained model.
+        b. Get the prediction and the SHAP explanation for that prediction.
+
+        Display Results: Use commands like st.write(), st.metric(), and st.pyplot() to display the prediction, key data points, and the SHAP force plot on the web page.
+
+    What to Document:
+
+        A simple guide on how to launch the Streamlit app.
+
+    Success Criteria: You can run streamlit run app.py, open a web browser, type in a ticker, and see a full, explained prediction.
+
+Module 4.2: Pipeline Orchestration & Automation
+
+    Objective: To make your entire data collection and model retraining process run automatically on a schedule.
+
+    Prerequisites: All previous modules completed.
+
+    Key Libraries/Tools: cron (Linux/macOS), Task Scheduler (Windows), or Apache Airflow (Advanced).
+
+    Step-by-Step Approach:
+
+        Script Your Pipeline: Ensure your scripts can be run from the command line without manual intervention.
+
+        Simple Scheduling (Cron):
+        a. Set up a daily cron job to run your data-fetching and feature-engineering scripts (data_fetcher.py, feature_engineer.py, etc.).
+        b. Set up a weekly cron job to run your model training script (train_model.py) to retrain on the latest available data.
+
+        Advanced Scheduling (Airflow): For a more robust solution, define your pipeline as a DAG (Directed Acyclic Graph) in Airflow. This gives you a UI, logging, and better error handling, but has a steeper learning curve.
+
+    What to Document:
+
+        A list of the scheduled jobs, their frequency, and what each one does.
+
+    Success Criteria: Your database automatically updates with new data every day, and your model retrains every week, without you having to lift a finger.

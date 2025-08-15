@@ -1,0 +1,5 @@
+# Web Framework & Dashboarding
+streamlit==1.35.0
+pandas==2.2.2
+matplotlib==3.9.0
+

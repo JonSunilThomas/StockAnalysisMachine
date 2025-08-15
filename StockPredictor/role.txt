@@ -1,0 +1,77 @@
+Person 1: The Quant (Backend & ML Core)
+
+Your focus is on building the data foundation and the machine learning "brain."
+
+Modules to Complete:
+
+    Initial Project Setup
+
+    Module 1.1 & 1.4: Core Data Ingestion (Fundamentals & Price)
+
+    Module 1.3 & 1.5: Core Feature Engineering (Financial & Technical)
+
+    Module 2.3: Data Unification
+
+    Module 3.1 & 3.2: Model Training & Evaluation
+
+    Module 4.2: Pipeline Orchestration
+
+File Checklist:
+
+    README.md (Initial structure and backend setup instructions)
+
+    backend/config/settings.py
+
+    backend/utils/database_manager.py
+
+    backend/data_processing/get_fundamental_data.py (Module 1.1)
+
+    backend/data_processing/get_price_data.py (Module 1.4)
+
+    backend/feature_engineering/build_fundamental_features.py (Module 1.3)
+
+    backend/feature_engineering/build_technical_features.py (Module 1.5)
+
+    backend/feature_engineering/unify_features.py (Module 2.3)
+
+    backend/ml_models/train_model.py (Module 3.1)
+
+    backend/ml_models/evaluate.py (Module 3.2)
+
+    backend/main_pipeline.py (Module 4.2)
+
+Person 2: The Developer (Alternative Data & Application Layer)
+
+Your focus is on enriching the data with external context and building the interactive application that delivers the final result.
+
+Modules to Complete:
+
+    Module 1.6 & 1.7: Alternative Data Ingestion (Macro & News)
+
+    Module 1.8: NLP Feature Engineering
+
+    Module 3.3: Prediction & Explanation Endpoints
+
+    Module 4.1: Frontend UI & Components
+
+    Backend-to-Frontend Integration
+
+File Checklist:
+
+    backend/data_processing/get_macro_data.py (Module 1.6)
+
+    backend/data_processing/get_news_data.py (Module 1.7)
+
+    backend/feature_engineering/build_sentiment_features.py (Module 1.8)
+
+    backend/ml_models/predict.py (Handles prediction logic for the frontend)
+
+    backend/ml_models/explain.py (Module 3.3)
+
+    frontend/app.py (Module 4.1)
+
+    frontend/ui_components/dashboard_plots.py (Module 4.1)
+
+    frontend/ui_components/display_info.py (Module 4.1)
+
+    README.md (Add user guide and frontend setup instructions)

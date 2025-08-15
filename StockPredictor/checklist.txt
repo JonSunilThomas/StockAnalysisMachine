@@ -1,0 +1,153 @@
+Backend Checklist
+
+📁 config/settings.py
+
+    [ ] Define a variable for each API key (Alpha Vantage, NewsAPI, etc.).
+
+    [ ] Define variables for all database connection parameters (host, port, user, password, database name).
+
+    [ ] Define a variable for the file path where the trained model will be saved.
+
+📁 utils/database_manager.py
+
+    [ ] create_db_engine(): A function that uses the credentials from settings.py to create and return a SQLAlchemy database engine object.
+
+    [ ] write_to_db(dataframe, table_name, engine): A function that takes a pandas DataFrame and writes it to a specified table in the database. It should handle logic for what to do if the table already exists (e.g., append, replace).
+
+    [ ] read_from_db(sql_query, engine): A function that executes a SQL query and returns the result as a pandas DataFrame.
+
+📁 data_processing/
+
+    get_fundamental_data.py:
+
+        [ ] A function to fetch income statements for a list of tickers.
+
+        [ ] A function to fetch balance sheets.
+
+        [ ] A function to fetch cash flow statements.
+
+        [ ] Each function should save its data to a unique table in the database.
+
+    get_price_data.py:
+
+        [ ] A function to fetch daily OHLCV (Open, High, Low, Close, Volume) data for a list of tickers, going back several years.
+
+        [ ] It should save this data to a daily_prices table.
+
+    get_macro_data.py:
+
+        [ ] A function to fetch key economic indicators (e.g., interest rates, CPI) from a source like the FRED API.
+
+        [ ] It should save this data to a macro_features table.
+
+    get_news_data.py:
+
+        [ ] A function to fetch recent news articles for a list of tickers.
+
+        [ ] It should extract the headline, publication date, and article text/description.
+
+        [ ] It should save this information to a news_articles table, avoiding duplicate entries.
+
+📁 feature_engineering/
+
+    build_fundamental_features.py:
+
+        [ ] A function that reads raw financial statements from the database.
+
+        [ ] It should calculate key ratios like P/E, P/S, Debt-to-Equity, ROE, and various growth rates.
+
+        [ ] It should save these calculated features to a fundamental_features table.
+
+    build_technical_features.py:
+
+        [ ] A function that reads the daily_prices table.
+
+        [ ] It should use a library like pandas_ta to calculate a suite of indicators (RSI, MACD, Bollinger Bands, etc.).
+
+        [ ] It should save these indicators to a technical_features table.
+
+    build_sentiment_features.py:
+
+        [ ] A function that reads unscored articles from the news_articles table.
+
+        [ ] It should load a pre-trained NLP model (like FinBERT).
+
+        [ ] It should process each article to get a sentiment score (e.g., -1 to +1).
+
+        [ ] It should save these scores to a sentiment_features table.
+
+    unify_features.py:
+
+        [ ] A function that loads all individual feature tables (fundamental, technical, sentiment, macro).
+
+        [ ] It should perform the critical task of aligning all data to a daily frequency, forward-filling quarterly data where necessary.
+
+        [ ] It should save the final, merged dataset to a master_features table.
+
+📁 ml_models/
+
+    train_model.py:
+
+        [ ] A function that loads the master_features table.
+
+        [ ] It should define the prediction target (e.g., will the price increase 5% in 90 days?).
+
+        [ ] It should split the data into training and testing sets based on time.
+
+        [ ] It should train an XGBoost model.
+
+        [ ] It should save the trained model object to the file path defined in settings.py.
+
+    evaluate.py:
+
+        [ ] A function that implements the backtesting logic.
+
+        [ ] It should simulate trades based on the model's historical predictions.
+
+        [ ] It should calculate and return key performance metrics (Total Return, Sharpe Ratio, Max Drawdown).
+
+    predict.py:
+
+        [ ] A function make_prediction(data_row) that loads the saved model.
+
+        [ ] It should take a single row of the latest data for a stock and return the model's prediction (e.g., 'Buy', 'Sell', 'Hold').
+
+    explain.py:
+
+        [ ] A function explain_prediction(data_row) that loads the saved model.
+
+        [ ] It should use the SHAP library to calculate the feature contributions for a single prediction.
+
+        [ ] It should return the SHAP values or a SHAP plot object.
+
+📁 main_pipeline.py
+
+    [ ] A main function or set of functions to orchestrate the entire backend workflow.
+
+    [ ] It should call the necessary functions from data_processing and feature_engineering in the correct order.
+
+    [ ] It should include logic to run the train_model.py script on a different schedule (e.g., weekly vs. daily).
+
+Frontend Checklist
+
+📁 app.py
+
+    [ ] Set up the basic Streamlit page layout (title, sidebar, etc.).
+
+    [ ] Create UI widgets, primarily a text input box for the stock ticker and a button to trigger the analysis.
+
+    [ ] Contain the main application logic that runs when the button is clicked.
+
+    [ ] This logic should call the backend functions (predict.py, explain.py) and then pass the results to the UI component functions for display.
+
+📁 ui_components/dashboard_plots.py
+
+    [ ] A function to create and display the SHAP force plot using matplotlib and st.pyplot().
+
+    [ ] A function to create and display a historical price chart for the selected stock.
+
+📁 ui_components/display_info.py
+
+    [ ] A function to display the final prediction in a clear, visually appealing way (e.g., using st.metric with a color indicator).
+
+    [ ] A function to display a table of the key features that drove the prediction.

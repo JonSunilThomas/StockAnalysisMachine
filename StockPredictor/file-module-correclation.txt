@@ -1,0 +1,63 @@
+ai_stock_analyst/
+│
+├── backend/
+│   │
+│   ├── config/
+│   │   ├── init.py
+│   │   └── settings.py             # Stores API keys, database credentials, file paths, and other constants.
+│   │
+│   ├── data_processing/
+│   │   ├── init.py
+│   │   ├── get_fundamental_data.py # Module 1.1: Fetches income statements, balance sheets, cash flow.
+│   │   ├── get_price_data.py       # Module 1.4: Fetches historical OHLCV data.
+│   │   ├── get_macro_data.py       # Module 1.6: Fetches economic data from sources like FRED.
+│   │   └── get_news_data.py        # Module 1.7: Fetches news articles from NewsAPI or other sources.
+│   │
+│   ├── feature_engineering/
+│   │   ├── init.py
+│   │   ├── build_fundamental_features.py # Module 1.3: Calculates financial ratios (P/E, D/E, ROE).
+│   │   ├── build_technical_features.py   # Module 1.5: Calculates technical indicators (RSI, MACD).
+│   │   ├── build_sentiment_features.py   # Module 1.8: Applies NLP model (FinBERT) to news text.
+│   │   └── unify_features.py             # Module 2.3: Combines all features into a single master dataset.
+│   │
+│   ├── ml_models/
+│   │   ├── init.py
+│   │   ├── train_model.py          # Module 3.1: Trains the final XGBoost meta-model and saves it.
+│   │   ├── predict.py              # Loads a saved model to make a prediction for a new data point.
+│   │   ├── evaluate.py             # Module 3.2: Contains the backtesting logic and performance metrics.
+│   │   └── explain.py              # Module 3.3: Integrates SHAP to explain model predictions.
+│   │
+│   ├── exploration_scripts/
+│   │   ├── 01_explore_fundamentals.py    # Use these scripts for initial data analysis and testing.
+│   │   ├── 02_explore_technicals.py      # You can run these files directly to experiment before
+│   │   └── 03_prototype_model.py         # formalizing code in other modules.
+│   │
+│   ├── saved_models/
+│   │   └── meta_model_v1.json      # Stores the trained XGBoost model file (output of train_model.py).
+│   │
+│   ├── utils/
+│   │   ├── init.py
+│   │   └── database_manager.py     # Helper functions for all database interactions (connecting, writing, reading).
+│   │
+│   ├── main_pipeline.py            # Master script to run the entire backend process in sequence for automation.
+│   │
+│   └── requirements.txt            # All Python libraries for the backend (pandas, xgboost, scikit-learn, etc.).
+│
+│
+├── frontend/
+│   │
+│   ├── assets/
+│   │   ├── logo.png                # Optional: A logo image for your dashboard.
+│   │   └── styles.css              # Optional: Custom CSS for advanced Streamlit styling.
+│   │
+│   ├── ui_components/
+│   │   ├── init.py
+│   │   ├── dashboard_plots.py      # Functions that create visualizations (e.g., price history chart).
+│   │   └── display_info.py         # Functions to neatly display metrics, predictions, and SHAP plots.
+│   │
+│   ├── app.py                      # Module 4.1: The main Streamlit application file that runs the dashboard.
+│   │
+│   └── requirements.txt            # Python libraries for the frontend (streamlit, pandas, etc.).
+│
+│
+└── README.md                       # Main project documentation: setup instructions, architecture overview, and usage guide.

@@ -1,0 +1,51 @@
+Backend Constraints
+
+📁 config/settings.py
+
+    Security: This is the most important constraint. This file contains secret keys. It must not be committed to a public version control system like GitHub. You should add config/settings.py to your .gitignore file.
+
+📁 utils/database_manager.py
+
+    Abstraction: This file must be the only place where database connection logic (create_engine) exists. All other files should import and use its functions. This prevents your database credentials and logic from being scattered across the project.
+
+    Connection Pooling: For a more advanced system, this file would be responsible for managing a pool of database connections to handle multiple requests efficiently, rather than creating a new connection for every single query.
+
+📁 data_processing/ (All files within)
+
+    API Rate Limiting: Most free APIs have strict limits (e.g., 5 calls per minute). Your scripts must respect these limits. You should implement a delay (e.g., time.sleep(15)) between API calls in your loops to avoid getting your IP address temporarily blocked.
+
+    Idempotency: The scripts must be "idempotent," meaning running them multiple times shouldn't create duplicate data. Before writing new data, you should check if data for that stock and date already exists in the database.
+
+    Error Handling: What happens if the API is down or returns an error for one stock? The script shouldn't crash. It should log the error for that specific ticker and continue processing the rest of the list.
+
+📁 feature_engineering/
+
+    Handling Missing Values (NaN): Financial calculations can easily result in NaN (Not a Number) or Infinity values (e.g., division by zero if a company has zero earnings). Your code must have a clear strategy for handling these, such as filling them with 0, the median, or dropping the row, before they are fed to the model.
+
+    Lookahead Bias: This is a critical constraint for unify_features.py. When you forward-fill quarterly fundamental data, you must ensure you are not accidentally using information that would not have been available at that time. The alignment of data based on its publication date is paramount.
+
+    Data Requirements: Scripts like build_technical_features.py must handle edge cases where there isn't enough historical data to calculate an indicator (e.g., you can't calculate a 200-day moving average if you only have 50 days of price data).
+
+📁 ml_models/
+
+    Time-Series Splitting: In train_model.py, the single most important constraint is to never use a random data split. You must split your training and testing sets based on time (e.g., train on data before 2024, test on data from 2024 onwards). Using a random split would cause severe "lookahead bias" and make your model's performance seem unrealistically good.
+
+    Feature Consistency: The data used for predict.py and explain.py must have the exact same columns in the exact same order as the data used in train_model.py. Any discrepancy will cause the model to fail.
+
+    Realistic Backtesting: The evaluate.py script must be conservative. It should factor in hypothetical transaction costs (brokerage fees) and slippage (the difference between the expected trade price and the actual execution price) to provide a realistic estimate of performance.
+
+📁 main_pipeline.py
+
+    Execution Order: This script is a workflow orchestrator. Its primary constraint is ensuring that tasks are run in the correct order of dependency (e.g., you must fetch price data before you can calculate technical indicators).
+
+    Logging: This script should have robust logging. When it runs automatically overnight, you need a log file that tells you what steps succeeded, what failed, and why.
+
+Frontend Constraints
+
+📁 app.py
+
+    Performance: The frontend must be fast and responsive. It should not perform any heavy data processing. Its job is to query the already-processed data from the database and call the lightweight predict.py function. Running the entire backend pipeline on a button click would be unacceptably slow.
+
+    State Management: Streamlit reruns the entire script on every user interaction. You need to use Streamlit's state management features (st.session_state) to store information (like the prediction result) so it doesn't have to be re-calculated every time the user clicks something.
+
+    Input Validation: The app must gracefully handle invalid user inputs, such as a non-existent stock ticker, without crashing.

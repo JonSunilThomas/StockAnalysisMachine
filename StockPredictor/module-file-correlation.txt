@@ -1,0 +1,35 @@
+Phase 1: Foundation & Data Pipelines
+
+    Module 1.1 (Fundamental Data): backend/data_processing/get_fundamental_data.py
+
+    Module 1.3 (Fundamental Features): backend/feature_engineering/build_fundamental_features.py
+
+    Module 1.4 (Price Data): backend/data_processing/get_price_data.py
+
+    Module 1.5 (Technical Features): backend/feature_engineering/build_technical_features.py
+
+    Module 1.6 (Macroeconomic Data): backend/data_processing/get_macro_data.py
+
+    Module 1.7 (News Data): backend/data_processing/get_news_data.py
+
+    Module 1.8 (Sentiment Features): backend/feature_engineering/build_sentiment_features.py
+
+Phase 2: Model Development & Data Unification
+
+    Module 2.3 (Unify All Features): backend/feature_engineering/unify_features.py
+
+(Note: Modules 2.1 and 2.2, the baseline models, would be developed in the exploration_scripts/ files like 03_prototype_model.py before the final model is built.)
+
+Phase 3: Synthesis, Validation & Interpretation
+
+    Module 3.1 (Train Master Model): backend/ml_models/train_model.py
+
+    Module 3.2 (Backtesting Framework): backend/ml_models/evaluate.py
+
+    Module 3.3 (Explainable AI): backend/ml_models/explain.py
+
+Phase 4: Deployment & Automation
+
+    Module 4.1 (Interactive Dashboard): frontend/app.py
+
+    Module 4.2 (Pipeline Orchestration): backend/main_pipeline.py

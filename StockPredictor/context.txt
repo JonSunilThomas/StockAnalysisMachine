@@ -1,0 +1,124 @@
+Project Title: Hybrid AI Analyst: A Multi-Pillar Stock Prediction Engine
+
+1. Executive Summary & Core Mission
+
+This project's mission is to develop a sophisticated, AI-driven system that moves beyond simple price prediction to construct a comprehensive, evidence-based investment thesis for individual stocks. It is not a "get rich quick" tool but a decision-support system designed to emulate and scale the analytical workflow of a professional human stock market analyst. The system will synthesize four distinct pillars of analysis—Fundamental, Technical, Macroeconomic, and Narrative (Sentiment)—into a single, coherent, and explainable forecast. The final output will include a directional prediction (e.g., "Bullish"), a probability-based outcome range (Base, Bull, Bear cases), and a transparent explanation of the key factors driving the decision.
+
+2. The Four Pillars of Analysis: A Deep Dive
+
+The engine's intelligence is derived from its ability to integrate diverse data sources, each corresponding to a pillar of professional analysis.
+
+    Pillar 1: Fundamental Analysis (The "Why")
+
+        Objective: To determine a company's intrinsic value based on its business health and performance.
+
+        Data Sources: Quarterly and annual financial statements (Income Statements, Balance Sheets, Cash Flow Statements) sourced from financial data APIs (e.g., Alpha Vantage).
+
+        Engineered Features: The system will not use raw data. It will calculate a rich set of features, including:
+
+            Valuation Ratios: Price-to-Earnings (P/E), Price-to-Sales (P/S), Price-to-Book (P/B), Enterprise Value-to-EBITDA (EV/EBITDA).
+
+            Profitability Metrics: Gross Margin, Operating Margin, Net Profit Margin, Return on Equity (ROE), Return on Assets (ROA).
+
+            Growth Metrics: Year-over-Year (YoY) & Quarter-over-Quarter (QoQ) Revenue Growth, EPS Growth.
+
+            Financial Health Ratios: Debt-to-Equity (D/E), Current Ratio, Quick Ratio.
+
+    Pillar 2: Technical Analysis (The "When")
+
+        Objective: To analyze market psychology and momentum as reflected in price and volume data.
+
+        Data Sources: Daily historical OHLCV (Open, High, Low, Close, Volume) data from the same financial APIs.
+
+        Engineered Features: A comprehensive suite of technical indicators will be calculated to capture trends and momentum:
+
+            Trend Indicators: 50-day, 100-day, and 200-day Simple and Exponential Moving Averages (SMA/EMA).
+
+            Momentum Indicators: Relative Strength Index (RSI), Moving Average Convergence Divergence (MACD).
+
+            Volatility Indicators: Bollinger Bands, Average True Range (ATR).
+
+            Volume Indicators: On-Balance Volume (OBV).
+
+    Pillar 3: Macroeconomic Analysis (The "Environment")
+
+        Objective: To understand the broader economic context in which the company operates.
+
+        Data Sources: Government and institutional databases like FRED (Federal Reserve Economic Data).
+
+        Engineered Features: Key economic indicators that influence market-wide performance:
+
+            Interest Rates (e.g., 10-Year Treasury Yield).
+
+            Inflation Rates (e.g., Consumer Price Index - CPI).
+
+            GDP Growth Rates.
+
+            Key commodity prices (e.g., Oil).
+
+    Pillar 4: Narrative & Sentiment Analysis (The "Hype")
+
+        Objective: To quantify the qualitative story and market sentiment surrounding a stock. This is a key differentiator.
+
+        Data Sources: Unstructured text data from news articles (via NewsAPI), press releases, and potentially social media.
+
+        Engineered Features (via NLP):
+
+            Sentiment Score: Using a specialized financial NLP model (FinBERT), each news article will be scored on a scale from -1 (highly negative) to +1 (highly positive).
+
+            News Volume: A measure of how many articles are being published about the company, indicating public interest.
+
+3. System Architecture & Technical Stack
+
+The project is architected with a clear separation between the backend data processing engine and the frontend user interface.
+
+    Backend:
+
+        Language: Python 3.9+
+
+        Core Libraries:
+
+            Data Manipulation: Pandas, NumPy
+
+            Machine Learning: Scikit-learn, XGBoost
+
+            Deep Learning (NLP): Transformers (from Hugging Face), PyTorch/TensorFlow
+
+            Database: PostgreSQL (for robust data storage) with SQLAlchemy (as the ORM).
+
+            API Interaction: requests
+
+        Structure: A modular structure with distinct directories for data_processing, feature_engineering, ml_models, and utils. This ensures maintainability and scalability.
+
+    Frontend:
+
+        Framework: Streamlit
+
+        Purpose: To provide a simple, interactive web-based dashboard for users to input a stock ticker and receive the full analysis.
+
+        Visualization: Matplotlib, SHAP plots.
+
+4. The Machine Learning Pipeline: From Data to Decision
+
+The core of the project is a multi-stage ML pipeline:
+
+    Data Unification: A critical step where all features from the four pillars are combined into a single, time-aligned master dataset. Daily data (technical, sentiment) is merged with quarterly data (fundamentals) using a forward-filling technique to prevent lookahead bias.
+
+    Model Training: An XGBoost (Extreme Gradient Boosting) model will be trained on the master dataset. XGBoost is chosen for its high performance on tabular data and its inherent ability to handle complex interactions between different types of features.
+
+    Prediction Target: The model will be trained on a classification task, such as predicting whether a stock's price will increase by more than a certain threshold (e.g., 8%) over a defined future period (e.g., 90 days), outperforming a benchmark index.
+
+    Explainable AI (XAI): Post-prediction, the SHAP (SHapley Additive exPlanations) library will be used. This is a non-negotiable component. It will analyze any given prediction and generate a human-readable output detailing which features (e.g., "positive news sentiment," "high P/E ratio") contributed most significantly to the model's decision, and in which direction.
+
+    Backtesting: The model's strategy will be rigorously backtested on historical data it has never seen. This simulation will account for transaction costs and slippage to produce realistic performance metrics like the Sharpe Ratio and Maximum Drawdown.
+
+5. Project Workflow & Deliverables
+
+The project is divided into two parallel development streams:
+
+    Quant Stream (Person 1): Focuses on building the entire backend data infrastructure and the core ML model. Deliverables include all data processing scripts, feature engineering logic, the train_model.py script, and the backtester.
+
+    Developer Stream (Person 2): Focuses on alternative data (news/NLP) and the complete user application. Deliverables include the news and sentiment pipelines, the predict.py and explain.py "API" files, and the fully functional Streamlit dashboard.
+
+The final deliverable is a fully integrated system where a user can enter a stock ticker into the web dashboard and receive an immediate, AI-generated analytical report, complete with a directional forecast and a clear, feature-by-feature explanation of the reasoning behind it.
+

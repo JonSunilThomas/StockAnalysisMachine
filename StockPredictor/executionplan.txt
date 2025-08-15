@@ -1,0 +1,77 @@
+Approach for Person 1: The Quant
+
+Your role is to be the architect of the data and intelligence core. You work from the ground up, ensuring the foundation is solid before building the brain on top. Your workflow is sequential and focused on data integrity.
+
+Your Mindset: "My data must be clean, my features must be logical, and my model must be tested rigorously. The entire system relies on the quality of my work."
+
+Step-by-Step Approach:
+
+    Day 1 Morning: Build the Scaffolding.
+
+        Action: Your very first task is to create the entire folder structure (backend, config, utils, etc.) and populate it with empty __init__.py files.
+
+        Then, build the foundation: Write the complete config/settings.py and utils/database_manager.py files. This is non-negotiable. Without these, no data can be stored.
+
+    Day 1 Afternoon: Build the Core Data Pipelines.
+
+        Action: Tackle data_processing/get_fundamental_data.py and get_price_data.py.
+
+        Workflow: For each file, first write the code to fetch data from the API and print it. Once you confirm the data is coming through correctly, integrate your database_manager to save it to the database. This isolates debugging.
+
+    Day 2 Morning: Engineer the Core Features.
+
+        Action: Now that you have raw data, work on feature_engineering/build_fundamental_features.py and build_technical_features.py.
+
+        Workflow: Your process is: Read raw data from the DB -> Perform calculations using pandas -> Save the new feature data back to a new table in the DB.
+
+    Day 2 Afternoon: The Critical Merge & Model Training.
+
+        Action: Focus entirely on feature_engineering/unify_features.py. This is your most complex data task. Map out the logic for aligning daily and quarterly data on paper first. The goal is a single, clean master data file with no lookahead bias.
+
+        Then, train: Immediately move to ml_models/train_model.py. Use the master file you just created. The most important constraint here is using a time-based split for your training and testing data.
+
+    Day 2 Evening & Day 3: Validate and Automate.
+
+        Action: Write the backtester in ml_models/evaluate.py. This tells you if your model has any real predictive power.
+
+        Finally, orchestrate: Write the backend/main_pipeline.py script. This is your final deliverable, a master script that calls all your previous work in the correct sequence.
+
+Approach for Person 2: The Developer
+
+Your role is to be the builder of the application and the alternative data specialist. You work in parallel, building the user-facing components first with mock data, and then integrating the live model.
+
+Your Mindset: "I will build a fully functional application that is ready for the 'brain' to be dropped in. My work will make the Quant's complex model usable and understandable to a human."
+
+Step-by-Step Approach:
+
+    Day 1: Build Your Independent Data Pipelines.
+
+        Action: While Person 1 is setting up the core, you can immediately start on your independent tasks: data_processing/get_macro_data.py and get_news_data.py.
+
+        Then, build the NLP engine: Move directly to feature_engineering/build_sentiment_features.py. This module is entirely self-contained and is a major contribution to the project's data assets.
+
+    Day 2 Morning: Build the UI with Mock Data.
+
+        Action: This is a crucial parallel step. Open frontend/app.py and build the entire user interface using Streamlit. Do not wait for Person 1.
+
+        Workflow: When you need data for a plot or a metric, create a fake pandas DataFrame or dictionary right in the script. For the "Analyze" button, make it return a hardcoded prediction. This allows you to perfect the user experience without any dependencies.
+
+    Day 2 Afternoon: Define the "API Contract".
+
+        Action: Write the backend/ml_models/predict.py and explain.py files.
+
+        Workflow: You don't have the real model yet, so your make_prediction function can simply return a random choice of "Buy" or "Sell". The important part is defining the function (def make_prediction(data_row):). This creates a clear "contract" that your frontend will use to talk to the backend.
+
+    Day 3 Morning: The Integration.
+
+        Action: This is your key integration task. Person 1 has now created the real meta_model_v1.json. You will update your predict.py and explain.py files to load this real model instead of the dummy one.
+
+        Then, connect the wires: In frontend/app.py, replace your mock data calls with live calls to the now-functional predict.py and explain.py scripts. Because you already built the UI to handle the expected data structure, this should be a clean swap.
+
+    Day 3 Afternoon & Evening: Test, Break, and Document.
+
+        Action: You are now the project's first Quality Assurance (QA) engineer. Use the application extensively. Try different tickers, look for bugs, and identify areas where the UI is slow or confusing.
+
+        Communicate: Provide clear feedback and bug reports to Person 1.
+
+        Document: Write the user-facing portion of the README.md, explaining how to run the Streamlit app and interpret the results.
