@@ -48,6 +48,7 @@ pip install -r frontend/requirements.txt
 
 Launch the Streamlit dashboard with this command:
 ```bash
+python backend/main_pipeline.py
 streamlit run frontend/app.py
 ```
 
