@@ -50,12 +50,18 @@ ai_stock_analyst/
 │   │   ├── logo.png                # Optional: A logo image for your dashboard.
 │   │   └── styles.css              # Optional: Custom CSS for advanced Streamlit styling.
 │   │
+|   |──pages
+|   |   ├── Analysis.py                # Optional: A logo image for your dashboard.
+│   │   └── Portfolio.py              # Optional: Custom CSS for advanced Streamlit styling.
+│   │
+|   |
+|   | 
 │   ├── ui_components/
 │   │   ├── init.py
 │   │   ├── dashboard_plots.py      # Functions that create visualizations (e.g., price history chart).
 │   │   └── display_info.py         # Functions to neatly display metrics, predictions, and SHAP plots.
 │   │
-│   ├── app.py                      # Module 4.1: The main Streamlit application file that runs the dashboard.
+│   ├── Login.py                      # Module 4.1: The main Streamlit application file that runs the dashboard.
 │   │
 │   └── requirements.txt            # Python libraries for the frontend (streamlit, pandas, etc.).
 │
