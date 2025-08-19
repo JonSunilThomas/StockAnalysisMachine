@@ -26,4 +26,11 @@ def explain_prediction(processed_data: pd.DataFrame):
         'contribution': contributions
     }).sort_values(by='contribution', ascending=False)
     
+    # (in the explain_prediction function)
+# ...
+    # --- USE THIS UPDATED FEATURE LIST ---
+    features = ['RSI_14', 'MACD_12_26_9', 'MACDh_12_26_9', 'MACDs_12_26_9', 'roe', 'roa', 'avg_sentiment']
+    data_for_explanation = processed_data[features]
+# ...
+
     return explanation_df

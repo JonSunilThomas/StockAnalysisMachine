@@ -1,41 +1,51 @@
 # backend/data_processing/get_price_data.py
 import pandas as pd
-import numpy as np
+import yfinance as yf
 from pathlib import Path
 import sys
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 from backend.config.settings import RAW_DATA_DIR
 
-def get_price_data(ticker: str, output_path: Path):
+def get_price_data(ticker: str, output_path: Path, start_date="2020-01-01"):
     """
-    Simulates fetching and saving historical price data.
+    Fetches real historical price data from Yahoo Finance and saves it to a CSV.
+    
+    Args:
+        ticker (str): The stock ticker to fetch.
+        output_path (Path): The path to save the output CSV file.
+        start_date (str): The start date for the historical data in YYYY-MM-DD format.
     """
-    print(f"Simulating price data fetch for {ticker}...")
+    print(f"Fetching real historical price data for {ticker} from Yahoo Finance...")
     
-    # Create a sample DataFrame of historical prices
-    dates = pd.date_range(start="2023-01-01", end="2025-08-15", freq='B')
-    data_size = len(dates)
-    
-    price_data = {
-        'date': dates,
-        'open': np.random.uniform(150, 200, size=data_size).cumsum(),
-        'high': lambda df: df['open'] + np.random.uniform(0, 5, size=data_size),
-        'low': lambda df: df['open'] - np.random.uniform(0, 5, size=data_size),
-        'close': lambda df: (df['open'] + df['high'] + df['low']) / 3,
-        'volume': np.random.randint(1e6, 5e6, size=data_size)
-    }
-    
-    price_df = pd.DataFrame({'date': dates})
-    price_df['open'] = np.random.uniform(150, 160, size=data_size)
-    price_df['high'] = price_df['open'] + np.random.uniform(0, 5, size=data_size)
-    price_df['low'] = price_df['open'] - np.random.uniform(0, 5, size=data_size)
-    price_df['close'] = (price_df['open'] + price_df['high'] + price_df['low']) / 3
-    price_df['volume'] = np.random.randint(1e6, 5e6, size=data_size)
+    try:
+        # Download the data
+        price_df = yf.download(ticker, start=start_date, auto_adjust=True)
+        
+        if price_df.empty:
+            print(f"❌ No data found for ticker {ticker}. It may be delisted or invalid.")
+            return
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    price_df.to_csv(output_path, index=False)
-    print(f"✅ Mock price data for {ticker} saved to {output_path}")
+        # --- IMPORTANT: Standardize column names ---
+        # yfinance returns columns like 'Open', 'High'. We need lowercase.
+        price_df.reset_index(inplace=True)
+        price_df.rename(columns={
+            'Date': 'date',
+            'Open': 'open',
+            'High': 'high',
+            'Low': 'low',
+            'Close': 'close',
+            'Volume': 'volume'
+        }, inplace=True)
+        # ---
+        
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        price_df.to_csv(output_path, index=False)
+        print(f"✅ Real historical price data for {ticker} saved to {output_path}")
+
+    except Exception as e:
+        print(f"❌ An error occurred while fetching price data for {ticker}: {e}")
+
 
 if __name__ == '__main__':
     target_ticker = "AAPL"

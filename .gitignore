@@ -9,3 +9,5 @@ data/
 
 # Environment variables
 .env                    
+
+firestore_credentials.json

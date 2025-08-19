@@ -19,6 +19,13 @@ def make_prediction(processed_data: pd.DataFrame):
     confidence = prediction_proba[0][1]
     prediction = 'Bullish' if confidence > 0.5 else 'Bearish'
     
+    # (in the make_prediction function)
+# ...
+    # --- USE THIS UPDATED FEATURE LIST ---
+    features = ['RSI_14', 'MACD_12_26_9', 'MACDh_12_26_9', 'MACDs_12_26_9', 'roe', 'roa', 'avg_sentiment']
+    data_for_prediction = processed_data[features]
+# ...
+
     return {
         'prediction': prediction,
         'confidence': confidence,

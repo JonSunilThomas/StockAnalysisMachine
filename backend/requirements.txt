@@ -23,3 +23,5 @@ python-dotenv==1.0.1
 
 pandas-ta==0.3.14b
 setuptools
+firebase-admin==6.5.0
+yfinance
