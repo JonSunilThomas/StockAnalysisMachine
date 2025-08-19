@@ -24,7 +24,6 @@ ai_stock_analyst/
 │   │   ├── init.py
 │   │   ├── train_model.py          # Module 3.1: Trains the final XGBoost meta-model and saves it.
 │   │   ├── predict.py              # Loads a saved model to make a prediction for a new data point.
-│   │   ├── evaluate.py             # Module 3.2: Contains the backtesting logic and performance metrics.
 │   │   └── explain.py              # Module 3.3: Integrates SHAP to explain model predictions.
 │   │
 │   ├── exploration_scripts/
