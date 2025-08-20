@@ -17,7 +17,14 @@ def train_model(ticker: str):
     print(f"Training model for {ticker}...")
     master_df = pd.read_csv(PROCESSED_DATA_DIR / f"master_dataset_{ticker}.csv", parse_dates=['date'])
     
-    features = ['RSI_14', 'MACD_12_26_9', 'roe', 'roa', 'avg_sentiment']
+    # In all three files: train_model.py, predict.py, and explain.py
+
+# --- USE THIS FINAL, COMPLETE FEATURE LIST ---
+    features = [
+        'RSI_14', 'MACD_12_26_9', 
+        'roe', 'roa', 'avg_sentiment',
+        'treasury_yield_10y', 'cpi' # <-- Add the new macro features
+    ]
     master_df = master_df.dropna(subset=features)
 
     X = master_df[features]

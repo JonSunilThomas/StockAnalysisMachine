@@ -11,7 +11,14 @@ def explain_prediction(processed_data: pd.DataFrame):
     model.load_model(model_path)
     
     # --- FIX: Define and select only the feature columns ---
-    features = ['RSI_14', 'MACD_12_26_9', 'roe', 'roa', 'avg_sentiment']
+# In all three files: train_model.py, predict.py, and explain.py
+
+# --- USE THIS FINAL, COMPLETE FEATURE LIST ---
+    features = [
+        'RSI_14', 'MACD_12_26_9', 
+        'roe', 'roa', 'avg_sentiment',
+        'treasury_yield_10y', 'cpi' # <-- Add the new macro features
+    ]
     data_for_explanation = processed_data[features]
     # ---
     
